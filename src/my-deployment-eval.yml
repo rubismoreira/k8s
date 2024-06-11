@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exam-api-deployment
+  labels:
+    app: exam-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: exam-api
+  template:
+    metadata:
+      labels:
+        app: exam-api
+    spec:
+      containers:
+      - name: exam-api
+        image: rubismoreira/k8s-exam:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: my-sql-password
+              key: password
+        - name: DB_URL
+          value: mysql-db
+    
+      - name: mysql-db
+        image: datascientest/mysql-k8s:1.0.0
+        ports:
+        - containerPort: 3306
+          protocol: TCP
