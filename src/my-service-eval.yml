@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-exam-service
+  name: exam-service
   labels:
     app: exam-api
 spec:
@@ -10,5 +10,20 @@ spec:
   - port: 8000
     protocol: TCP
     targetPort: 8000
+  selector:
+    app: exam-api
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: exam-service-nodeport
+  labels:
+    app: exam-api
+spec:
+  type: NodePort
+  ports:
+  - port: 3306
+    targetPort: 3306
+    protocol: TCP
   selector:
     app: exam-api

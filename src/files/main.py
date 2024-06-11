@@ -1,13 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.engine import create_engine
+from sqlalchemy import text
 from os import environ
 
 # creating a FastAPI server
 server = FastAPI(title='User API')
 
 # creating a connection to the database
-mysql_url = environ.get('MYSQL_URL', 'localhost:3306')
+mysql_url = environ.get('MYSQL_URL')
 mysql_user = 'root'
 mysql_password = environ.get('MYSQL_PASSWORD')
 database_name = 'Main'
@@ -45,7 +46,7 @@ async def get_secrets():
 @server.get('/users')
 async def get_users():
     with mysql_engine.connect() as connection:
-        results = connection.execute('SELECT * FROM Users;')
+        results = connection.execute(text('SELECT * FROM Users;'))
 
     results = [
         User(
@@ -59,8 +60,8 @@ async def get_users():
 @server.get('/users/{user_id:int}', response_model=User)
 async def get_user(user_id):
     with mysql_engine.connect() as connection:
-        results = connection.execute(
-            'SELECT * FROM Users WHERE Users.id = {};'.format(user_id))
+        results = connection.execute(text(
+            'SELECT * FROM Users WHERE Users.id = {};'.format(user_id)))
 
     results = [
         User(
